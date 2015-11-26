@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Built-By: Santi
+Class-Path: eis-0.5.0.jar pal-utils-1.0.jar
+Build-Jdk: 1.8.0_66
+Created-By: Maven Integration for Eclipse
+Main-Class: eis_interface.EnvironmentInterface
+
