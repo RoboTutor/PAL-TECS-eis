@@ -1,7 +1,10 @@
 package eis_interface;
 
 import java.awt.BorderLayout;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -14,6 +17,8 @@ import eis.exceptions.ManagementException;
 import eis.iilang.Action;
 import eis.iilang.EnvironmentState;
 import eis.iilang.Parameter;
+import eis.iilang.ParameterList;
+import eis.iilang.Identifier;
 
 @SuppressWarnings("serial")
 public class EnvironmentInterface extends AbstractEnvironment {
@@ -21,30 +26,24 @@ public class EnvironmentInterface extends AbstractEnvironment {
 	private JFrame outputWindow;
 	private JTextArea area;
 	private Entity entity;
-	String message = "";
-	boolean receivePercept = false;
-
-	@AsPercept(name = "receive")
-	public String receivePercert() {
-		System.out.println("yuhjuu");
-		if (receivePercept) {
-			System.out.println("I am about the send the percept!");
-			receivePercept = false;
-			return message;
-		}
-		return null;
-	}
+	private LinkedList<String> subscriptions = new LinkedList<String>();
 
 	@Override
 	public void init(Map<String, Parameter> parameters) throws ManagementException {
 		super.init(parameters);
 		area = initWindow();
-		System.out.println("I am here!");
-
+		if (parameters.keySet().contains("subscription")) {
+			Parameter p = parameters.get("subscription");
+			if (p instanceof ParameterList) {
+				for (int i = 0; i < ((ParameterList) p).size(); i++) {
+					subscriptions.add(((Identifier) ((ParameterList) p).get(i)).getValue());
+				}
+			}
+		}
 		setState(EnvironmentState.PAUSED);
 		// Try creating and registering an entity.
 		try {
-			entity = new Entity(area);
+			entity = new Entity(area,subscriptions);
 			registerEntity("entity1", entity);
 			System.out.println("Registered");
 		} catch (EntityException e) {
